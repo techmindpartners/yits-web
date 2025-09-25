@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>yits.me — coming soon</title>
+  <meta name="description" content="yits.me is a consent‑first personal profile: measurements, preferences, diets, allergies, phobias, hobbies, languages — share what you want, with whom you want. Coming soon." />
+  <meta property="og:title" content="yits.me — coming soon" />
+  <meta property="og:description" content="Consent‑first personal profiles for measurements, preferences and more. Share safely and selectively." />
+  <meta property="og:type" content="website" />
+  <meta name="theme-color" content="#f472b6" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body class="min-h-screen bg-white text-slate-800 selection:bg-pink-200 selection:text-slate-900 flex flex-col">
+
+
+  <main class="flex-1 max-w-4xl mx-auto px-6 pt-16 pb-24 text-center">
+    <div class="inline-flex items-center gap-2 rounded-full border border-pink-200 bg-pink-50 px-3 py-1 text-xs text-pink-600">
+      🎉 Coming soon
+    </div>
+
+    <h2 class="mt-6 text-5xl md:text-6xl font-extrabold tracking-tight leading-tight">
+      He<span class="text-pink-500">y it's</span> me.
+    </h2>
+    <p class="mt-4 text-lg text-slate-600 max-w-2xl mx-auto">
+      Build a consent‑first profile with your measurements & sizes (ring, shoe, clothing), diets & allergies, hobbies & phobias, and the languages you speak. Share only what you want — with people you choose.
+    </p>
+
+    <section id="notify" class="mt-20">
+      <div class="rounded-3xl bg-pink-50 p-8 border border-pink-100">
+        <h3 class="font-semibold text-xl text-pink-700">Get notified</h3>
+        <p class="mt-1 text-slate-600">Leave your email and we’ll ping you when we open the gates.</p>
+        <form class="mt-4 grid sm:grid-cols-[1fr_auto] gap-3" action="#" method="post" onsubmit="notify(event)">
+          <input required type="email" name="email" placeholder="you@domain.com" class="rounded-full bg-white border border-pink-200 px-4 py-3 outline-none focus:border-pink-500 placeholder:text-slate-400" />
+          <button class="rounded-full bg-pink-500 text-white font-semibold px-6 py-3 hover:bg-pink-400">Notify me</button>
+        </form>
+        <p id="notify-msg" class="mt-3 text-sm text-pink-600 hidden">Thanks! We’ll keep you posted.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="max-w-6xl mx-auto px-6 pb-10 text-sm text-slate-400 flex flex-col sm:flex-row items-center justify-between gap-4">
+    <p>© <span id="year"></span> yits.me</p>
+    <a href="mailto:hello@yits.me" class="hover:text-slate-600">hey@yits.me</a>
+  </footer>
+
+  <script>
+    // Confetti on load
+    window.addEventListener('load', () => {
+        confetti({
+        particleCount: 300,
+        spread: 100,
+        origin: { y: 0.6 }
+      });
+    });
+
+    // Notify handler
+    async function notify(e) {
+      e.preventDefault();
+      
+      const email = e.target.email.value;
+      const scriptUrl = 'https://script.google.com/macros/s/AKfycbw7zKtAihLklSmWohncO0WB4K2RtDKyMfAcp_a9GZ_TQnUS11vdsW19V4hdByXZTL4N/exec';
+      const notifyMsg = document.getElementById('notify-msg');
+      const submitBtn = e.target.querySelector('button');
+      
+      // Loading state
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Sending...';
+      
+      try {
+        const formData = new FormData();
+        formData.append('email', email);
+        
+        const response = await fetch(scriptUrl, {
+          method: 'POST',
+          body: formData
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          notifyMsg.textContent = 'Thanks! We\'ll keep you posted.';
+          notifyMsg.classList.remove('hidden');
+          e.target.reset();
+        } else {
+          notifyMsg.textContent = 'Error: ' + (result.message || 'Please try again.');
+          notifyMsg.classList.remove('hidden');
+          notifyMsg.classList.add('text-red-600');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        notifyMsg.textContent = 'Something went wrong. Please try again.';
+        notifyMsg.classList.remove('hidden');
+        notifyMsg.classList.add('text-red-600');
+      } finally {
+        // Reset button
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Notify me';
+      }
+    }
+
+    // Year in footer
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
